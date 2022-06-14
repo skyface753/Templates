@@ -3,12 +3,13 @@ import express from "express";
 import path from "path";
 import mongoose from "mongoose";
 import User from "./schemas/user";
-import Blogs from "./schemas/blogs";
 import bodyParser from "body-parser";
 import bcrypt from "bcrypt";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import { Request, Response } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 const saltRounds = 10;
 // tslint:disable:no-console
 // initialize configuration
@@ -25,6 +26,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// CORS
+app.use(cors({
+  origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  credentials: true
+}));
 
 mongoose.connect(uri);
 
@@ -48,10 +54,6 @@ app.get("/", (req, res) => {
     // res.render("index", { users });
     console.log(users);
   })
-  Blogs.find({}, (err: any, blogs: any) => {
-    if (err) return console.error(err);
-    console.log(blogs);
-  }).populate("posted_by");
   const mascots = [
     { name: "Sammy", organization: "DigitalOcean", birth_year: 2012 },
     { name: "Tux", organization: "Linux", birth_year: 1996 },
@@ -83,16 +85,26 @@ app.post("/login", (req, res) => {
         if (result) {
           const token = jwt.sign({ username }, process.env.JWT_SECRET);
           res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-          res.redirect("/");
+          res.json({
+            success: true,
+            message: "Login successful",
+            user,
+          });
         } else {
           console.log("Password incorrect");
-          res.redirect("/login");
+          res.json({
+            success: false,
+            message: "Password incorrect",
+          });
         }
       }
       )
     } else {
       console.log("User not found");
-      res.redirect("/login");
+      res.json({
+        success: false,
+        message: "User not found",
+      });
     }
   })
 });
@@ -104,7 +116,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  if(!username || !password) {
+  if (!username || !password) {
     res.redirect("/register");
   }
   const userExists = User.findOne({ username }, (errEx: any, userEx: any) => {
@@ -114,19 +126,19 @@ app.post("/register", (req, res) => {
       res.redirect("/register");
     } else {
 
-  const hashedPassword = bcrypt.hashSync(password, saltRounds);
-  console.log(hashedPassword);
-  const user = new User({
-    username,
-    password: hashedPassword,
-  });
-  user.save((err: any) => {
-    if (err) return console.error(err);
-    const token = jwt.sign({ username }, process.env.JWT_SECRET);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-    res.redirect("/");
-  }
-  );
+      const hashedPassword = bcrypt.hashSync(password, saltRounds);
+      console.log(hashedPassword);
+      const user = new User({
+        username,
+        password: hashedPassword,
+      });
+      user.save((err: any) => {
+        if (err) return console.error(err);
+        const token = jwt.sign({ username }, process.env.JWT_SECRET);
+        res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
+        res.redirect("/");
+      }
+      );
     }
   })
 });
@@ -147,6 +159,19 @@ app.get("/checkLogin", (req, res) => {
   }
 })
 
+app.get("/logout", (req, res) => {
+  logoutUser(res);
+})
+app.post("/logout", (req, res) => {
+  logoutUser(res);
+})
+function logoutUser(res: Response<any, Record<string, any>, number>) {
+  res.clearCookie("jwt");
+  res.json({
+    success: true,
+    message: "Logout successful",
+  });
+}
 
 
 app.use(express.static(path.join(__dirname, "scripts")));

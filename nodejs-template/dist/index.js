@@ -8,9 +8,9 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = __importDefault(require("./schemas/user"));
-const blogs_1 = __importDefault(require("./schemas/blogs"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const cors_1 = __importDefault(require("cors"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const saltRounds = 10;
@@ -25,6 +25,11 @@ const uri = "mongodb://" + process.env.MONGODB_HOST + ":27017/skyfacedb";
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
+// CORS
+app.use((0, cors_1.default)({
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    credentials: true
+}));
 mongoose_1.default.connect(uri);
 const connection = mongoose_1.default.connection;
 connection.once("open", () => {
@@ -45,11 +50,6 @@ app.get("/", (req, res) => {
         // res.render("index", { users });
         console.log(users);
     });
-    blogs_1.default.find({}, (err, blogs) => {
-        if (err)
-            return console.error(err);
-        console.log(blogs);
-    }).populate("posted_by");
     const mascots = [
         { name: "Sammy", organization: "DigitalOcean", birth_year: 2012 },
         { name: "Tux", organization: "Linux", birth_year: 1996 },
@@ -77,17 +77,27 @@ app.post("/login", (req, res) => {
                 if (result) {
                     const token = jsonwebtoken_1.default.sign({ username }, process.env.JWT_SECRET);
                     res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-                    res.redirect("/");
+                    res.json({
+                        success: true,
+                        message: "Login successful",
+                        user,
+                    });
                 }
                 else {
                     console.log("Password incorrect");
-                    res.redirect("/login");
+                    res.json({
+                        success: false,
+                        message: "Password incorrect",
+                    });
                 }
             });
         }
         else {
             console.log("User not found");
-            res.redirect("/login");
+            res.json({
+                success: false,
+                message: "User not found",
+            });
         }
     });
 });
@@ -140,6 +150,19 @@ app.get("/checkLogin", (req, res) => {
         res.send("No token");
     }
 });
+app.get("/logout", (req, res) => {
+    logoutUser(res);
+});
+app.post("/logout", (req, res) => {
+    logoutUser(res);
+});
+function logoutUser(res) {
+    res.clearCookie("jwt");
+    res.json({
+        success: true,
+        message: "Logout successful",
+    });
+}
 app.use(express_1.default.static(path_1.default.join(__dirname, "scripts")));
 // start the express server
 app.listen(port, () => {

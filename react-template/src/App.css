@@ -32,7 +32,53 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+
+/* Dropdown Menu */
+.loggedInUserMenu-Button {
+  /* background-color: #04AA6D; */
+  color: white;
+  /* padding: 16px; */
+  font-size: 16px;
+  border: none;
+}
+
+.loggedInUserMenu {
+  position: relative;
+  display: inline-block;
+}
+
+.loggedInUser-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  right: 0;
+}
+
+.loggedInUser-dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.loggedInUser-dropdown-content a:hover {
+  background-color: rgb(121, 112, 112);
+}
+
+.loggedInUserMenu:hover .loggedInUser-dropdown-content {
+  display: block;
+}
+
+.profile-pic {
+  max-height: 50px;
+  border-radius: 50%;
 }
