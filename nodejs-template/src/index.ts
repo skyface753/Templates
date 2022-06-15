@@ -4,13 +4,13 @@ import path from "path";
 import mongoose from "mongoose";
 import User from "./schemas/user";
 import bodyParser from "body-parser";
-import bcrypt from "bcrypt";
+
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { Request, Response } from "express-serve-static-core";
 import { ParsedQs } from "qs";
-const saltRounds = 10;
+
 // tslint:disable:no-console
 // initialize configuration
 dotenv.config();
@@ -46,14 +46,6 @@ app.set("view engine", "ejs");
 
 // define a route handler for the default home page
 app.get("/", (req, res) => {
-  // render the index template
-  // res.render( "index" );
-  User.find({}, (err: any, users: any) => {
-    // tslint:disable-next-line:no-console
-    if (err) return console.error(err);
-    // res.render("index", { users });
-    console.log(users);
-  })
   const mascots = [
     { name: "Sammy", organization: "DigitalOcean", birth_year: 2012 },
     { name: "Tux", organization: "Linux", birth_year: 1996 },
@@ -61,123 +53,25 @@ app.get("/", (req, res) => {
   ];
   const tagline: string =
     "No programming concept is complete without a cute animal mascot.";
-
   res.render("index", {
     mascots,
     tagline,
   });
 });
 
-app.get("/login", (req, res) => {
-  res.render("login");
-})
-
-// app.post("/login", (req, res) => {
-
-//   const username = req.body.username;
-//   const password = req.body.password;
-
-//   User.findOne({ username }, (userError: any, user: any) => {
-//     if (userError) return console.error(userError);
-//     if (user) {
-//       bcrypt.compare(password, user.password, (bcryptError: any, result: any) => {
-//         if (bcryptError) return console.error(bcryptError);
-//         if (result) {
-//           const token = jwt.sign({ username }, process.env.JWT_SECRET);
-//           res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-//           res.json({
-//             success: true,
-//             message: "Login successful",
-//             user,
-//           });
-//         } else {
-//           console.log("Password incorrect");
-//           res.json({
-//             success: false,
-//             message: "Password incorrect",
-//           });
-//         }
-//       }
-//       )
-//     } else {
-//       console.log("User not found");
-//       res.json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-//   })
-// });
-
-app.get("/register", (req, res) => {
-  res.render("register");
-});
-
-app.post("/register", (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  if (!username || !password) {
-    res.redirect("/register");
-  }
-  const userExists = User.findOne({ username }, (errEx: any, userEx: any) => {
-    if (errEx) return console.error(errEx);
-    if (userEx) {
-      console.log("User already exists");
-      res.redirect("/register");
-    } else {
-
-      const hashedPassword = bcrypt.hashSync(password, saltRounds);
-      console.log(hashedPassword);
-      const user = new User({
-        username,
-        password: hashedPassword,
-      });
-      user.save((err: any) => {
-        if (err) return console.error(err);
-        const token = jwt.sign({ username }, process.env.JWT_SECRET);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-        res.redirect("/");
-      }
-      );
-    }
-  })
-});
-
-app.get("/checkLogin", (req, res) => {
-  const token = req.cookies.jwt;
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err: any, decoded: any) => {
-      if (err) {
-        res.send("Not logged in");
-      } else {
-        res.send("Logged in as " + decoded.username);
-      }
-    }
-    )
-  } else {
-    res.send("No token");
-  }
-})
-
-app.get("/logout", (req, res) => {
-  logoutUser(res);
-})
-app.post("/logout", (req, res) => {
-  logoutUser(res);
-})
-function logoutUser(res: Response<any, Record<string, any>, number>) {
-  res.clearCookie("jwt");
-  res.json({
-    success: true,
-    message: "Logout successful",
-  });
-}
-
-
 app.use(express.static(path.join(__dirname, "scripts")));
-
+import { Middleware } from "./middleware";
+const middleware = new Middleware();
+app.use(async (req: Request, res: Response, next: any) => {
+  await middleware.getUser(req, res, next);
+});
+app.use(async (req: Request, res: Response, next: any) => {
+  await middleware.userRoute(req, res, next);
+});
 import backend from "./routes/backend";
 app.use("/api", backend);
+import frontend from "./routes/frontend";
+app.use("/", frontend);
 
 // start the express server
 app.listen(port, () => {

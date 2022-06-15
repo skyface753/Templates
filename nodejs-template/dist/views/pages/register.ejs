@@ -29,13 +29,11 @@
                     <input type="password" id="password" class="fadeIn third" name="password_confirmation" placeholder="password confirmation" required>
                     <input type="submit" class="fadeIn fourth" value="Register">
                 </form> -->
-                <form name="registerForm" action="/register" onsubmit="return validateFormNeu()" method="post">
-                    Name: <input type="text" name="username">
-                    Password: <input type="password" name="password">
-                    Confirm Password: <input type="password" name="pwd2">
-                    <input type="submit" value="Submit">
+                    Name: <input type="text" name="username" id="usernameRegister" required>
+                    Password: <input type="password" name="password" id="passwordRegister" required>
+                    Confirm Password: <input type="password" name="pwd2" id="password2Register" required>
+                    <button type="submit" onclick="register()">Register</button>
 
-                  </form>
                 
 
                 <!-- Remind Passowrd -->
@@ -51,6 +49,6 @@
     </footer>
 
 </body>
-<script src="register.js"></script>
+<script src="users.js"></script>
 
 </html>

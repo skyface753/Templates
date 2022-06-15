@@ -4,15 +4,7 @@ const router = express.Router();
 
  const userService = new UserService();
 router.post("/login", userService.login);
-
-
-
-// router.post("/login", (req, res) => {
-//     res.send("Login");
-// });
-
-// router.get("/register", (req, res) => {
-//     res.send("Register");
-// });
-
+router.post("/register", userService.register);
+router.post("/logout", userService.logout);
+router.post("/checkLogin", userService.checkLogin);
 export default router;

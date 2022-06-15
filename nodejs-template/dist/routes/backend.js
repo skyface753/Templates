@@ -8,11 +8,8 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const userService = new user_service_1.UserService();
 router.post("/login", userService.login);
-// router.post("/login", (req, res) => {
-//     res.send("Login");
-// });
-// router.get("/register", (req, res) => {
-//     res.send("Register");
-// });
+router.post("/register", userService.register);
+router.post("/logout", userService.logout);
+router.post("/checkLogin", userService.checkLogin);
 exports.default = router;
 //# sourceMappingURL=backend.js.map
