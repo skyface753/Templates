@@ -72,42 +72,42 @@ app.get("/login", (req, res) => {
   res.render("login");
 })
 
-app.post("/login", (req, res) => {
+// app.post("/login", (req, res) => {
 
-  const username = req.body.username;
-  const password = req.body.password;
+//   const username = req.body.username;
+//   const password = req.body.password;
 
-  User.findOne({ username }, (userError: any, user: any) => {
-    if (userError) return console.error(userError);
-    if (user) {
-      bcrypt.compare(password, user.password, (bcryptError: any, result: any) => {
-        if (bcryptError) return console.error(bcryptError);
-        if (result) {
-          const token = jwt.sign({ username }, process.env.JWT_SECRET);
-          res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-          res.json({
-            success: true,
-            message: "Login successful",
-            user,
-          });
-        } else {
-          console.log("Password incorrect");
-          res.json({
-            success: false,
-            message: "Password incorrect",
-          });
-        }
-      }
-      )
-    } else {
-      console.log("User not found");
-      res.json({
-        success: false,
-        message: "User not found",
-      });
-    }
-  })
-});
+//   User.findOne({ username }, (userError: any, user: any) => {
+//     if (userError) return console.error(userError);
+//     if (user) {
+//       bcrypt.compare(password, user.password, (bcryptError: any, result: any) => {
+//         if (bcryptError) return console.error(bcryptError);
+//         if (result) {
+//           const token = jwt.sign({ username }, process.env.JWT_SECRET);
+//           res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
+//           res.json({
+//             success: true,
+//             message: "Login successful",
+//             user,
+//           });
+//         } else {
+//           console.log("Password incorrect");
+//           res.json({
+//             success: false,
+//             message: "Password incorrect",
+//           });
+//         }
+//       }
+//       )
+//     } else {
+//       console.log("User not found");
+//       res.json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+//   })
+// });
 
 app.get("/register", (req, res) => {
   res.render("register");
@@ -175,6 +175,9 @@ function logoutUser(res: Response<any, Record<string, any>, number>) {
 
 
 app.use(express.static(path.join(__dirname, "scripts")));
+
+import backend from "./routes/backend";
+app.use("/api", backend);
 
 // start the express server
 app.listen(port, () => {

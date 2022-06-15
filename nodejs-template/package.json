@@ -27,7 +27,8 @@
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.3.6"
+    "mongoose": "^6.3.6",
+    "redis": "^4.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -39,6 +40,7 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^16.11.39",
     "@types/shelljs": "^0.8.11",
+    "@types/redis": "^4.0.11",
     "fs-extra": "^10.1.0",
     "nodemon": "^2.0.16",
     "npm-run-all": "^4.1.5",

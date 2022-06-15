@@ -64,43 +64,40 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
     res.render("login");
 });
-app.post("/login", (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    user_1.default.findOne({ username }, (userError, user) => {
-        if (userError)
-            return console.error(userError);
-        if (user) {
-            bcrypt_1.default.compare(password, user.password, (bcryptError, result) => {
-                if (bcryptError)
-                    return console.error(bcryptError);
-                if (result) {
-                    const token = jsonwebtoken_1.default.sign({ username }, process.env.JWT_SECRET);
-                    res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
-                    res.json({
-                        success: true,
-                        message: "Login successful",
-                        user,
-                    });
-                }
-                else {
-                    console.log("Password incorrect");
-                    res.json({
-                        success: false,
-                        message: "Password incorrect",
-                    });
-                }
-            });
-        }
-        else {
-            console.log("User not found");
-            res.json({
-                success: false,
-                message: "User not found",
-            });
-        }
-    });
-});
+// app.post("/login", (req, res) => {
+//   const username = req.body.username;
+//   const password = req.body.password;
+//   User.findOne({ username }, (userError: any, user: any) => {
+//     if (userError) return console.error(userError);
+//     if (user) {
+//       bcrypt.compare(password, user.password, (bcryptError: any, result: any) => {
+//         if (bcryptError) return console.error(bcryptError);
+//         if (result) {
+//           const token = jwt.sign({ username }, process.env.JWT_SECRET);
+//           res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict" });
+//           res.json({
+//             success: true,
+//             message: "Login successful",
+//             user,
+//           });
+//         } else {
+//           console.log("Password incorrect");
+//           res.json({
+//             success: false,
+//             message: "Password incorrect",
+//           });
+//         }
+//       }
+//       )
+//     } else {
+//       console.log("User not found");
+//       res.json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+//   })
+// });
 app.get("/register", (req, res) => {
     res.render("register");
 });
@@ -164,6 +161,8 @@ function logoutUser(res) {
     });
 }
 app.use(express_1.default.static(path_1.default.join(__dirname, "scripts")));
+const backend_1 = __importDefault(require("./routes/backend"));
+app.use("/api", backend_1.default);
 // start the express server
 app.listen(port, () => {
     // tslint:disable-next-line:no-console

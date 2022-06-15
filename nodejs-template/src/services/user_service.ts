@@ -2,10 +2,33 @@ import User, { IUser } from "../schemas/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Document, Types } from "mongoose";
+import {createClient} from "redis";
+const client = createClient();
+// tslint:disable-next-line:no-console
+client.on('error', (err) => console.log('Redis Client Error', err));
+async function initRedis() {
+// tslint:disable-next-line:no-console
+    console.log("initRedis");
+    await client.connect();
+    await client.set('key', 'value');
+const value = await client.get('key');
+// tslint:disable-next-line:no-console
+console.log(value);
+}
+
+initRedis();
+
 
 export class UserService {
+    UserService() {
+        // tslint:disable-next-line:no-console
+        console.log("UserService");
+    }
+
     async login(req: any, res: any) {
         const { username, password } = req.body;
+        // tslint:disable-next-line:no-console
+        console.log(username, password);
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(401).json({ success: false, message: "User not found" });

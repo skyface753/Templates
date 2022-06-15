@@ -1,11 +1,10 @@
+PROJECT=Templates
+
+dev: install-dev
 
 
-dev:
-
-build:
-
-setup:
-
-flutter-install: ;@echo "Installing Flutter"
-	flutter pub get
-	flutter pub upgrade
+install-dev:
+	npm install -C nodejs-template
+	npm install -C react-template
+	npm install -C react_native-template
+	

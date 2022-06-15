@@ -54,10 +54,11 @@ export default function Login() {
                 <button
                     className="sign-in-up-btn"
                     onClick={() => {
-                        apiService("login", {
+                        apiService("api/login", {
                             username,
                             password,
                         }).then((response: any) => {
+                            console.log(response.data);
                             if (response.data.success) {
                                 var user = response.data["user"];
                                 dispatch({

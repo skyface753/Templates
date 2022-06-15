@@ -16,10 +16,32 @@ exports.UserService = void 0;
 const user_1 = __importDefault(require("../schemas/user"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const redis_1 = require("redis");
+const client = (0, redis_1.createClient)();
+// tslint:disable-next-line:no-console
+client.on('error', (err) => console.log('Redis Client Error', err));
+function initRedis() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // tslint:disable-next-line:no-console
+        console.log("initRedis");
+        yield client.connect();
+        yield client.set('key', 'value');
+        const value = yield client.get('key');
+        // tslint:disable-next-line:no-console
+        console.log(value);
+    });
+}
+initRedis();
 class UserService {
+    UserService() {
+        // tslint:disable-next-line:no-console
+        console.log("UserService");
+    }
     login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = req.body;
+            // tslint:disable-next-line:no-console
+            console.log(username, password);
             const user = yield user_1.default.findOne({ username });
             if (!user) {
                 return res.status(401).json({ success: false, message: "User not found" });
