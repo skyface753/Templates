@@ -64,10 +64,11 @@ import { Middleware } from "./middleware";
 const middleware = new Middleware();
 app.use(async (req: Request, res: Response, next: any) => {
   await middleware.getUser(req, res, next);
+  next();
 });
-app.use(async (req: Request, res: Response, next: any) => {
-  await middleware.userRoute(req, res, next);
-});
+// app.use(async (req: Request, res: Response, next: any) => {
+//   await middleware.userRoute(req, res, next);
+// });
 import backend from "./routes/backend";
 app.use("/api", backend);
 import frontend from "./routes/frontend";

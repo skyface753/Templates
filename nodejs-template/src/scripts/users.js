@@ -9,6 +9,7 @@ async function login() {
     },
     body: JSON.stringify({ username, password }),
   });
+  console.log(response);
   const data = await response.json();
   console.log(data);
   if (data.success) {

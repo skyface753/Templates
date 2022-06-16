@@ -62,10 +62,11 @@ const middleware_1 = require("./middleware");
 const middleware = new middleware_1.Middleware();
 app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield middleware.getUser(req, res, next);
+    next();
 }));
-app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    yield middleware.userRoute(req, res, next);
-}));
+// app.use(async (req: Request, res: Response, next: any) => {
+//   await middleware.userRoute(req, res, next);
+// });
 const backend_1 = __importDefault(require("./routes/backend"));
 app.use("/api", backend_1.default);
 const frontend_1 = __importDefault(require("./routes/frontend"));

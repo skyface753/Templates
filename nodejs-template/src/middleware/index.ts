@@ -20,21 +20,25 @@ export class Middleware{
             if (!token) {
                 console.log("No token");
                 req.user = null;
-                next();
+                // next();
+                return;
             }
             const user = await client.get(token);
             if (user) {
                 console.log("User found");
                 req.user = user;
-                next();
+                // next();
+                return;
             }else{
                 console.log("User not found");
                 req.user = null;
-                next();
+                // next();
+                return;
             }
         }catch(e){
             req.user = null;
-            next();
+            // next();
+            return;
         }
     }
     async userRoute(req: any, res: any, next: any){
@@ -43,8 +47,7 @@ export class Middleware{
             next();
         }else{
             console.log("User is not logged in, cancled");
-            res.status(401).json({ success: false, message: "Unauthorized" }).end();
-            return;
+            return next("Not logged in");
         }
     }
     async adminRoute(req: any, res: any, next: any){
@@ -60,17 +63,14 @@ export class Middleware{
             }
             else {
                 console.log("User is not admin, cancled");
-                res.status(401).json({ success: false, message: "Unauthorized" }).end();
-                return;
+                return next("Not admin");
             }
         }else{
             console.log("User is not logged in, cancled");
-            res.status(401).json({ success: false, message: "Unauthorized" }).end();
-            return;
+            return next("Not logged in");
         }
         }catch(e){
-            res.status(401).json({ success: false, message: "Unauthorized" }).end();
-            return;
+            return next("Not logged in");
         }
     }
 
