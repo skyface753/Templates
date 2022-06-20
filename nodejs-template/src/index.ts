@@ -37,7 +37,6 @@ mongoose.connect(uri);
 const connection = mongoose.connection;
 
 connection.once("open", () => {
-  // tslint:disable-next-line:no-console
   console.log("MongoDB database connection established successfully");
 });
 // Configure Express to use EJS
@@ -66,9 +65,6 @@ app.use(async (req: Request, res: Response, next: any) => {
   await middleware.getUser(req, res, next);
   next();
 });
-// app.use(async (req: Request, res: Response, next: any) => {
-//   await middleware.userRoute(req, res, next);
-// });
 import backend from "./routes/backend";
 app.use("/api", backend);
 import frontend from "./routes/frontend";

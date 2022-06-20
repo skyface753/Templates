@@ -38,7 +38,6 @@ app.use((0, cors_1.default)({
 mongoose_1.default.connect(uri);
 const connection = mongoose_1.default.connection;
 connection.once("open", () => {
-    // tslint:disable-next-line:no-console
     console.log("MongoDB database connection established successfully");
 });
 // Configure Express to use EJS
@@ -64,9 +63,6 @@ app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield middleware.getUser(req, res, next);
     next();
 }));
-// app.use(async (req: Request, res: Response, next: any) => {
-//   await middleware.userRoute(req, res, next);
-// });
 const backend_1 = __importDefault(require("./routes/backend"));
 app.use("/api", backend_1.default);
 const frontend_1 = __importDefault(require("./routes/frontend"));
