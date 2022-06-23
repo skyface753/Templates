@@ -19,6 +19,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const express_rate_limit_1 = require("express-rate-limit");
 // tslint:disable:no-console
 // initialize configuration
 dotenv_1.default.config();
@@ -30,6 +31,12 @@ const uri = "mongodb://" + process.env.MONGODB_HOST + ":27017/skyfacedb";
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
+const limiter = (0, express_rate_limit_1.rateLimit)({
+    windowMs: 1 * 60 * 1000,
+    max: 20
+});
+// apply rate limiter to all requests
+app.use(limiter);
 // CORS
 app.use((0, cors_1.default)({
     origin: ["http://localhost:3000", "http://127.0.0.1:3000"],

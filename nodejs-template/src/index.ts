@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { Request, Response } from "express-serve-static-core";
 import { ParsedQs } from "qs";
+import { rateLimit } from "express-rate-limit";
 
 // tslint:disable:no-console
 // initialize configuration
@@ -25,6 +26,13 @@ const uri = "mongodb://" + process.env.MONGODB_HOST + ":27017/skyfacedb";
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20
+});
+
+// apply rate limiter to all requests
+app.use(limiter);
 
 // CORS
 app.use(cors({
